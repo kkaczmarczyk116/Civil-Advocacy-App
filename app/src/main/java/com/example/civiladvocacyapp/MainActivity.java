@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -18,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -27,6 +29,11 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     private RequestQueue mQueue;
+    private TextView location;
+
+    private RecyclerView rec;
+    private ArrayList<MainRec> mr = new ArrayList<>();
+    private MainRecAdapter mrAdapter = new MainRecAdapter(this,mr);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mQueue = Volley.newRequestQueue(this);
+        location = findViewById(R.id.location);
+        rec = findViewById(R.id.rec);
 
         currentWeather();
 
@@ -52,23 +61,60 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             String address = "";
                             JSONObject normal = response.getJSONObject("normalizedInput");
-                            if(normal.has("line1")){
-                                String s1 = normal.getString("line1");
-                                address += s1+",";
+                            String s1 = normal.getString("line1");
+                            address += s1+" ";
+                            String s2 = normal.getString("city");
+                            address += s2+",";
+                            String s3 = normal.getString("state");
+                            address += s3+" ";
+                            String s4 = normal.getString("zip");
+                            address += s4;
+//                            if(normal.has("line1")){
+//                                String s1 = normal.getString("line1");
+//                                address += s1+",";
+//                            }
+//                            if(normal.has("city")){
+//                                String s2 = normal.getString("city");
+//                                address += s2+",";
+//                            }
+//                            if(normal.has("state")){
+//                                String s3 = normal.getString("state");
+//                                address += s3+",";
+//                            }
+//                            if(normal.has("zip")){
+//                                String s4 = normal.getString("zip");
+//                                address += s4;
+//                            }
+                            //System.out.println(address);
+                            location.setText(address);
+
+                            ArrayList<String> titles = new ArrayList<>();
+
+                            JSONArray t = response.getJSONArray("offices");
+                            ArrayList<Integer> ind = new ArrayList<>();
+                            for(int i =0; i < t.length();i++){
+                                JSONObject tEntry = t.getJSONObject(i);
+                                String title = tEntry.getString("name");
+                                titles.add(title);
+                                JSONArray indices = tEntry.getJSONArray("officialIndices");
+                                //ArrayList<Integer> ind = new ArrayList<>();
+                                for(int j =0;j<indices.length();j++) {
+                                    int placeholder = indices.getInt(j);
+                                    ind.add(placeholder);
+                                }
                             }
-                            if(normal.has("city")){
-                                String s2 = normal.getString("city");
-                                address += s2+",";
+                            JSONArray officials = response.getJSONArray("officials");
+                            for(int z= 0;z<officials.length();z++){
+                                JSONObject oEntry = officials.getJSONObject(z);
+                                String n = oEntry.getString("name");
                             }
-                            if(normal.has("state")){
-                                String s3 = normal.getString("state");
-                                address += s3+",";
+                            for(String tit : titles){
+                                MainRec obj = new MainRec(tit,"testname");
+                                mr.add(obj);
                             }
-                            if(normal.has("zip")){
-                                String s4 = normal.getString("zip");
-                                address += s4;
-                            }
-                            System.out.println(address);
+
+                            rec.setAdapter(mrAdapter);
+                            rec.setLayoutManager(new LinearLayoutManager(MainActivity.this,RecyclerView.VERTICAL,false));
 
 
 
