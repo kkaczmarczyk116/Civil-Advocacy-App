@@ -44,12 +44,16 @@ public class MainActivity extends AppCompatActivity {
         location = findViewById(R.id.location);
         rec = findViewById(R.id.rec);
 
-        currentWeather();
+        getInfo();
 
     }
 
+    //TODO: get more info from API and make obj?
+    //TODO: picture handling
+    //TODO: get current location
+    //TODO: color coding based on party,check for "unknown party"
 
-    private void currentWeather(){
+    private void getInfo(){
 
         String key = "AIzaSyCP09Gqz8IH7nHZeI7FGigeWNyvhUQrXwk";
         String url ="https://www.googleapis.com/civicinfo/v2/representatives?key="+key+"&address=Chicago";
@@ -69,58 +73,30 @@ public class MainActivity extends AppCompatActivity {
                             address += s3+" ";
                             String s4 = normal.getString("zip");
                             address += s4;
-//                            if(normal.has("line1")){
-//                                String s1 = normal.getString("line1");
-//                                address += s1+",";
-//                            }
-//                            if(normal.has("city")){
-//                                String s2 = normal.getString("city");
-//                                address += s2+",";
-//                            }
-//                            if(normal.has("state")){
-//                                String s3 = normal.getString("state");
-//                                address += s3+",";
-//                            }
-//                            if(normal.has("zip")){
-//                                String s4 = normal.getString("zip");
-//                                address += s4;
-//                            }
-                            //System.out.println(address);
                             location.setText(address);
 
                             ArrayList<String> titles = new ArrayList<>();
 
                             JSONArray t = response.getJSONArray("offices");
                             ArrayList<Integer> ind = new ArrayList<>();
+
+
                             for(int i =0; i < t.length();i++){
                                 JSONObject tEntry = t.getJSONObject(i);
                                 String title = tEntry.getString("name");
                                 titles.add(title);
                                 JSONArray indices = tEntry.getJSONArray("officialIndices");
-                                //ArrayList<Integer> ind = new ArrayList<>();
                                 for(int j =0;j<indices.length();j++) {
-                                    int placeholder = indices.getInt(j);
-                                    ind.add(placeholder);
+                                    JSONArray mapOfficials = response.getJSONArray("officials");
+                                    JSONObject officialObj = mapOfficials.getJSONObject(indices.getInt(j));
+                                    String officialName = officialObj.getString("name");
+                                    String officialParty = officialObj.getString("party");
+                                    MainRec obj = new MainRec(title,officialName+ " ("+officialParty+") ");
+                                    mr.add(obj);
                                 }
                             }
-                            JSONArray officials = response.getJSONArray("officials");
-                            for(int z= 0;z<officials.length();z++){
-                                JSONObject oEntry = officials.getJSONObject(z);
-                                String n = oEntry.getString("name");
-                            }
-                            for(String tit : titles){
-                                MainRec obj = new MainRec(tit,"testname");
-                                mr.add(obj);
-                            }
-
                             rec.setAdapter(mrAdapter);
                             rec.setLayoutManager(new LinearLayoutManager(MainActivity.this,RecyclerView.VERTICAL,false));
-
-
-
-
-
-
 
                         } catch (JSONException e) {
                             e.printStackTrace();
