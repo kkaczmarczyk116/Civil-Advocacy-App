@@ -1,11 +1,22 @@
 package com.example.civiladvocacyapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -26,14 +37,14 @@ import java.util.Locale;
 
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SelectListener {
 
     private RequestQueue mQueue;
     private TextView location;
 
     private RecyclerView rec;
     private ArrayList<MainRec> mr = new ArrayList<>();
-    private MainRecAdapter mrAdapter = new MainRecAdapter(this,mr);
+    private MainRecAdapter mrAdapter = new MainRecAdapter(this,mr,this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         mQueue = Volley.newRequestQueue(this);
         location = findViewById(R.id.location);
         rec = findViewById(R.id.rec);
+
+        getSupportActionBar().setTitle("Know Your Government");
 
         getInfo();
 
@@ -78,9 +91,6 @@ public class MainActivity extends AppCompatActivity {
                             ArrayList<String> titles = new ArrayList<>();
 
                             JSONArray t = response.getJSONArray("offices");
-                            ArrayList<Integer> ind = new ArrayList<>();
-
-
                             for(int i =0; i < t.length();i++){
                                 JSONObject tEntry = t.getJSONObject(i);
                                 String title = tEntry.getString("name");
@@ -114,5 +124,51 @@ public class MainActivity extends AppCompatActivity {
 
         mQueue.add(request);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.menu_location){
+            enterLocDialog(this);
+            Toast.makeText(this, "Location menu opened", Toast.LENGTH_SHORT).show();
+        }
+        else if (item.getItemId() == R.id.menu_info){
+            Intent intent = new Intent(MainActivity.this,aboutActivity.class);
+            startActivity(intent);
+            Toast.makeText(this, "Info menu opened", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemClicked(MainRec mr) {
+        Toast.makeText(this, "Item Selected" + mr.getName(), Toast.LENGTH_SHORT).show();
+    }
+
+    private void enterLocDialog(Context c) {
+        final EditText taskEditText = new EditText(c);
+        AlertDialog dialog = new AlertDialog.Builder(c)
+                .setTitle("Enter Address")
+                .setView(taskEditText)
+                .setPositiveButton("Okay ", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String task = String.valueOf(taskEditText.getText());
+                        location.setText(task);
+
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+        dialog.show();
     }
 }

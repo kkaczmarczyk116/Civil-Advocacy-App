@@ -12,10 +12,12 @@ import java.util.ArrayList;
 public class MainRecAdapter extends RecyclerView.Adapter<MainRecHolder> {
     private final MainActivity main;
     private ArrayList<MainRec> mainRecList = new ArrayList<>();
+    private SelectListener listener;
 
-    public MainRecAdapter(MainActivity main, ArrayList<MainRec> mainRecList) {
+    public MainRecAdapter(MainActivity main, ArrayList<MainRec> mainRecList, SelectListener listener) {
         this.main = main;
         this.mainRecList = mainRecList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -30,6 +32,12 @@ public class MainRecAdapter extends RecyclerView.Adapter<MainRecHolder> {
         MainRec mr = mainRecList.get(position);
         holder.name.setText(mr.getName());
         holder.title.setText(mr.getTitle());
+        holder.mainLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onItemClicked(mainRecList.get(position));
+            }
+        });
     }
 
     @Override
