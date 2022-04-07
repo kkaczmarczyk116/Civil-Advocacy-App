@@ -30,8 +30,8 @@ public class MainRecAdapter extends RecyclerView.Adapter<MainRecHolder> {
     @Override
     public void onBindViewHolder(@NonNull MainRecHolder holder, int position) {
         MainRec mr = mainRecList.get(position);
-        holder.name.setText(mr.getName());
-        holder.title.setText(mr.getTitle());
+        holder.name.setText(mr.getName()+"( " +mr.getParty() +" )");
+        holder.title.setText(mr.getTitle() );
         holder.mainLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

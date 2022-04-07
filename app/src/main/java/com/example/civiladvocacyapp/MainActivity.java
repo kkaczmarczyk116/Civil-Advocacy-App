@@ -61,10 +61,10 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
 
     }
 
-    //TODO: get more info from API and make obj?
     //TODO: picture handling
     //TODO: get current location
     //TODO: color coding based on party,check for "unknown party"
+
 
     private void getInfo(){
 
@@ -76,7 +76,9 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
                     public void onResponse(JSONObject response) {
 
                         try {
-                            String address = "";
+//
+                            String address = " ";
+
                             JSONObject normal = response.getJSONObject("normalizedInput");
                             String s1 = normal.getString("line1");
                             address += s1+" ";
@@ -88,21 +90,71 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
                             address += s4;
                             location.setText(address);
 
-                            ArrayList<String> titles = new ArrayList<>();
-
                             JSONArray t = response.getJSONArray("offices");
                             for(int i =0; i < t.length();i++){
                                 JSONObject tEntry = t.getJSONObject(i);
                                 String title = tEntry.getString("name");
-                                titles.add(title);
                                 JSONArray indices = tEntry.getJSONArray("officialIndices");
                                 for(int j =0;j<indices.length();j++) {
+                                    String pic = "none";
+                                    String teleObj = "none";
+                                    String website = "none";
+                                    String addyObj = " ";
                                     JSONArray mapOfficials = response.getJSONArray("officials");
                                     JSONObject officialObj = mapOfficials.getJSONObject(indices.getInt(j));
                                     String officialName = officialObj.getString("name");
                                     String officialParty = officialObj.getString("party");
-                                    MainRec obj = new MainRec(title,officialName+ " ("+officialParty+") ");
+                                    if(officialObj.has("photoUrl")){
+                                        pic = officialObj.getString("photoUrl");
+                                    }
+
+                                    if(officialObj.has("address")){
+                                        JSONArray addy = officialObj.getJSONArray("address");
+
+                                        JSONObject zero = (JSONObject) addy.get(0);
+
+                                        if(zero.has("line1")){
+                                            String line1 = zero.getString("line1");
+                                            addyObj+=line1+ " ";
+                                        }
+                                        if(zero.has("city")){
+                                            String city = zero.getString("city");
+                                            addyObj+=city+ ", ";
+                                        }
+                                        if(zero.has("state")){
+                                            String state = zero.getString("state");
+                                            addyObj +=state+ " ";
+                                        }
+                                        if(zero.has("zip")){
+                                            String zip = zero.getString("zip");
+                                            addyObj+=zip;
+                                        }
+
+                                    }else{
+                                        addyObj = "address not found";
+                                    }
+
+
+                                    if(officialObj.has("phones")){
+                                        JSONArray tele = officialObj.getJSONArray("phones");
+                                        if(tele.length() != 0){
+                                            teleObj = tele.getString(0);
+                                        }
+                                    }
+                                    if(officialObj.has("urls")){
+                                        JSONArray urls = officialObj.getJSONArray("urls");
+                                        if(urls.length() != 0){
+                                            website = urls.getString(0);
+                                        }
+                                    }
+
+                                    //TODO: grab channels info
+                                    //TODO:Make second Activitiy
+
+
+                                    MainRec obj = new MainRec(title,officialName,officialParty,pic,addyObj,teleObj,website);
                                     mr.add(obj);
+
                                 }
                             }
                             rec.setAdapter(mrAdapter);
@@ -136,12 +188,12 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(item.getItemId() == R.id.menu_location){
             enterLocDialog(this);
-            Toast.makeText(this, "Location menu opened", Toast.LENGTH_SHORT).show();
+
         }
         else if (item.getItemId() == R.id.menu_info){
             Intent intent = new Intent(MainActivity.this,aboutActivity.class);
             startActivity(intent);
-            Toast.makeText(this, "Info menu opened", Toast.LENGTH_SHORT).show();
+
         }
         else{
             Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
@@ -151,7 +203,13 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
 
     @Override
     public void onItemClicked(MainRec mr) {
-        Toast.makeText(this, "Item Selected" + mr.getName(), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(MainActivity.this,OfficialActivity.class);
+        intent.putExtra("title",mr.getTitle());
+        intent.putExtra("name",mr.getName());
+        intent.putExtra("party",mr.getParty());
+        intent.putExtra("img",mr.getPicurl());
+        startActivity(intent);
+        Toast.makeText(this, mr.getPicurl(), Toast.LENGTH_SHORT).show();
     }
 
     private void enterLocDialog(Context c) {
@@ -171,4 +229,7 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
                 .create();
         dialog.show();
     }
+
+
+
 }
