@@ -2,16 +2,22 @@ package com.example.civiladvocacyapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -24,27 +30,31 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-
-
 
 
 public class MainActivity extends AppCompatActivity implements SelectListener {
 
     private RequestQueue mQueue;
-    private TextView location;
+    private TextView locationTexeView;
 
     private RecyclerView rec;
     private ArrayList<MainRec> mr = new ArrayList<>();
     private MainRecAdapter mrAdapter = new MainRecAdapter(this,mr,this);
+
+    private FusedLocationProviderClient mFusedLocationClient;
+    private static final int LOCATION_REQUEST = 111000;
+    private static String locationString = "Unspecified Location";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +62,85 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
         setContentView(R.layout.activity_main);
 
         mQueue = Volley.newRequestQueue(this);
-        location = findViewById(R.id.location);
+        locationTexeView = findViewById(R.id.location);
         rec = findViewById(R.id.rec);
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        determineLocation();
 
         getSupportActionBar().setTitle("Know Your Government");
 
-        getInfo();
 
+
+    }
+
+    @SuppressLint("MissingPermission")
+    private void determineLocation() {
+        if (checkAppPermissions()) {
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, location -> {
+                        if (location != null) {
+                            locationString = getLoc(location);
+                            locationTexeView.setText(locationString);
+                            getInfo(locationString);
+                        }
+                    })
+                    .addOnFailureListener(this, e -> Toast.makeText(MainActivity.this,
+                            e.getMessage(), Toast.LENGTH_LONG).show());
+        }
+
+    }
+
+    private String getLoc(Location location) {
+        StringBuilder sb = new StringBuilder();
+
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        List<Address> addresses;
+
+        try {
+            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            String city = addresses.get(0).getLocality();
+            String state = addresses.get(0).getAdminArea();
+            sb.append(String.format(
+                    Locale.getDefault(),
+                    "%s,%s",
+                    city, state));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
+
+
+    private boolean checkAppPermissions() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                    }, LOCATION_REQUEST);
+            return false;
+        }
+        return true;
+
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_REQUEST) {
+            if (permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    determineLocation();
+                } else {
+                    locationTexeView.setText("Permission Was Not Granted");
+                }
+            }
+        }
     }
 
     //TODO: picture handling
@@ -66,10 +148,10 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
     //TODO: color coding based on party,check for "unknown party"
 
 
-    private void getInfo(){
+    private void getInfo(String l){
 
         String key = "AIzaSyCP09Gqz8IH7nHZeI7FGigeWNyvhUQrXwk";
-        String url ="https://www.googleapis.com/civicinfo/v2/representatives?key="+key+"&address=Chicago";
+        String url ="https://www.googleapis.com/civicinfo/v2/representatives?key="+key+"&address="+l;
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -88,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
                             address += s3+" ";
                             String s4 = normal.getString("zip");
                             address += s4;
-                            location.setText(address);
+                            locationTexeView.setText(address);
 
                             JSONArray t = response.getJSONArray("offices");
                             for(int i =0; i < t.length();i++){
@@ -207,7 +289,8 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
         intent.putExtra("title",mr.getTitle());
         intent.putExtra("name",mr.getName());
         intent.putExtra("party",mr.getParty());
-        intent.putExtra("img",mr.getPicurl());
+        String link = mr.getPicurl();
+        intent.putExtra("img",link);
         startActivity(intent);
         Toast.makeText(this, mr.getPicurl(), Toast.LENGTH_SHORT).show();
     }
@@ -221,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String task = String.valueOf(taskEditText.getText());
-                        location.setText(task);
+                        locationTexeView.setText(task);
 
                     }
                 })
