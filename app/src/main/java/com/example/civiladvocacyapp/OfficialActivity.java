@@ -38,7 +38,8 @@ public class OfficialActivity extends AppCompatActivity {
 //                //.resize(225,275)
 //                //.centerCrop()
 //                .into(official_pic);
-
+        SharedPreferences sp = getSharedPreferences("prefs",MODE_PRIVATE);
+        String s1 = sp.getString("picUrl","");
 
         Intent intent = getIntent();
         if(intent != null) {
@@ -47,8 +48,19 @@ public class OfficialActivity extends AppCompatActivity {
             String party = intent.getStringExtra("party");
             String imgLink = intent.getStringExtra("img");
             official_loc.setText(imgLink);
+            setOfficials(title,name,party,imgLink);
+            //String test = String.valueOf(intent.getStringExtra("img"));
+//            if(test.equals("none")){
+//                setOfficials(title,name,party);
+//                picasso.load("https://bioguide.congress.gov/bioguide/photo/D/D000563.jpg").into(official_pic);
+//            }else{
+//                setOfficials(title, name, party);
+//                official_loc.setText(s1);
+//                picasso.load(s1).into(official_pic);
+//                //picasso.load(imgLink).into(official_pic);
+//            }
+            //setOfficials(title, name, party, imgLink);
 
-            setOfficials(title, name, party, imgLink);
 
         }
     }
@@ -57,9 +69,14 @@ public class OfficialActivity extends AppCompatActivity {
         official_staff.setText(t);
         official_name.setText(n);
         official_party.setText("("+ p+" )");
-        picasso.load(img)
+        String s1 = img.replace("http","https");
+        picasso.load(s1)
                 .placeholder(R.drawable.placeholder)
+                .error(R.drawable.brokenimage)
                 .into(official_pic);
+//        picasso.load(img)
+//                .placeholder(R.drawable.placeholder)
+//                .into(official_pic);
 //        if(i != "none"){
 //            Picasso.get()
 //                .load(i)

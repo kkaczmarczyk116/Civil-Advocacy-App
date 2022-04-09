@@ -13,6 +13,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -55,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
     private FusedLocationProviderClient mFusedLocationClient;
     private static final int LOCATION_REQUEST = 111000;
     private static String locationString = "Unspecified Location";
+
+    private SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -285,6 +288,10 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
 
     @Override
     public void onItemClicked(MainRec mr) {
+        sp = getSharedPreferences("prefs",MODE_PRIVATE);
+        SharedPreferences.Editor myEdit = sp.edit();;
+        myEdit.putString("picUrl",mr.getPicurl());
+        myEdit.commit();
         Intent intent = new Intent(MainActivity.this,OfficialActivity.class);
         intent.putExtra("title",mr.getTitle());
         intent.putExtra("name",mr.getName());
