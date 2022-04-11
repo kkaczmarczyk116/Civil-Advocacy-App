@@ -15,8 +15,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CivilAdvocacyApp">
         <activity
-            android:name=".OfficialActivity"
+            android:name=".PhotoDetail"
             android:exported="false" />
+        <activity
+            android:name=".OfficialActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="geo" />
+                <data android:scheme="google.navigation" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".aboutActivity"
             android:exported="false" />

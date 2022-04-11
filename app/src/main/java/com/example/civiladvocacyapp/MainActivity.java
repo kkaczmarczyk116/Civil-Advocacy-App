@@ -52,12 +52,12 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
     private RecyclerView rec;
     private ArrayList<MainRec> mr = new ArrayList<>();
     private MainRecAdapter mrAdapter = new MainRecAdapter(this,mr,this);
-
+    private ArrayList<String> test = new ArrayList<>();
     private FusedLocationProviderClient mFusedLocationClient;
     private static final int LOCATION_REQUEST = 111000;
+    private int checkError;
     private static String locationString = "Unspecified Location";
 
-    private SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
 
 
     }
+    //TODO: Figure out error handling for entering bad location
+    //TODO: Horizontal Layout
+    //TODO: GEt Channel Intents
 
     @SuppressLint("MissingPermission")
     private void determineLocation() {
@@ -152,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
 
 
     private void getInfo(String l){
-
+        checkError =0;
         String key = "AIzaSyCP09Gqz8IH7nHZeI7FGigeWNyvhUQrXwk";
         String url ="https://www.googleapis.com/civicinfo/v2/representatives?key="+key+"&address="+l;
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -161,7 +164,8 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
                     public void onResponse(JSONObject response) {
 
                         try {
-//
+
+
                             String address = " ";
 
                             JSONObject normal = response.getJSONObject("normalizedInput");
@@ -225,20 +229,56 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
                                         if(tele.length() != 0){
                                             teleObj = tele.getString(0);
                                         }
+                                    }else{
+                                        teleObj = "none";
                                     }
                                     if(officialObj.has("urls")){
                                         JSONArray urls = officialObj.getJSONArray("urls");
                                         if(urls.length() != 0){
                                             website = urls.getString(0);
                                         }
+                                    }else{
+                                        website="none";
+                                    }
+                                    if(officialObj.has("channels")){
+                                        JSONArray channels = officialObj.getJSONArray("channels");
+                                        if(channels.length() != 0){
+                                            for(int c=0;c< channels.length();c++){
+                                                JSONObject ch = channels.getJSONObject(c);
+                                                if(ch.has("type")){
+                                                    String type = ch.getString("type");
+                                                    test.add(type);
+                                                }else{
+                                                    String type = "none";
+                                                    test.add(type);
+                                                }
+                                                if(ch.has("id")){
+                                                    String id = ch.getString("id");
+                                                    test.add(id);
+                                                }else{
+                                                    String id = "none";
+                                                    test.add(id);
+                                                }
+                                            }
+
+                                        }
+                                        while(test.size() < 6){
+                                            test.add("none");
+                                        }
+
+                                        String ch1Type = test.get(0);
+                                        String ch1Id= test.get(1);
+                                        String ch2Type= test.get(2);
+                                        String ch2Id= test.get(3);
+                                        String ch3Type= test.get(4);
+                                        String ch3Id= test.get(5);
+                                        test.clear();
+                                        Channels chanObj = new Channels(ch1Type,ch1Id,ch2Type,ch2Id,ch3Type,ch3Id);
+                                        MainRec obj = new MainRec(title,officialName,officialParty,pic,addyObj,teleObj,website,chanObj);
+                                        mr.add(obj);
+                                        test.clear();
                                     }
 
-                                    //TODO: grab channels info
-                                    //TODO:Make second Activitiy
-
-
-                                    MainRec obj = new MainRec(title,officialName,officialParty,pic,addyObj,teleObj,website);
-                                    mr.add(obj);
 
                                 }
                             }
@@ -246,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
                             rec.setLayoutManager(new LinearLayoutManager(MainActivity.this,RecyclerView.VERTICAL,false));
 
                         } catch (JSONException e) {
+                            checkError = 1;
                             e.printStackTrace();
                         }
 
@@ -254,6 +295,7 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                checkError=1;
                 error.printStackTrace();
 
             }
@@ -288,38 +330,60 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
 
     @Override
     public void onItemClicked(MainRec mr) {
-        sp = getSharedPreferences("prefs",MODE_PRIVATE);
-        SharedPreferences.Editor myEdit = sp.edit();;
-        myEdit.putString("picUrl",mr.getPicurl());
-        myEdit.commit();
+
+
         Intent intent = new Intent(MainActivity.this,OfficialActivity.class);
         intent.putExtra("title",mr.getTitle());
         intent.putExtra("name",mr.getName());
         intent.putExtra("party",mr.getParty());
         String link = mr.getPicurl();
         intent.putExtra("img",link);
+        intent.putExtra("location",locationString);
+        intent.putExtra("addy",mr.getAddress());
+        intent.putExtra("tele",mr.getPhone());
+        intent.putExtra("web",mr.getWebsite());
+        intent.putExtra("ch1Type",mr.getCh1Type());
+        intent.putExtra("ch1Id",mr.getCh1Id());
+        intent.putExtra("ch2Type",mr.getCh2Type());
+        intent.putExtra("ch2Id",mr.getCh2Id());
+        intent.putExtra("ch3Type",mr.getCh3Type());
+        intent.putExtra("ch3Id",mr.getCh3Id());
+
         startActivity(intent);
-        Toast.makeText(this, mr.getPicurl(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, mr.getCh1Type(),Toast.LENGTH_LONG).show();
     }
 
     private void enterLocDialog(Context c) {
-        final EditText taskEditText = new EditText(c);
-        AlertDialog dialog = new AlertDialog.Builder(c)
-                .setTitle("Enter Address")
-                .setView(taskEditText)
-                .setPositiveButton("Okay ", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String task = String.valueOf(taskEditText.getText());
-                        locationTexeView.setText(task);
+        try {
+            final EditText taskEditText = new EditText(c);
+            AlertDialog dialog = new AlertDialog.Builder(c)
+                    .setTitle("Enter Address")
+                    .setView(taskEditText)
+                    .setPositiveButton("Okay ", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String task = String.valueOf(taskEditText.getText());
+                            locationTexeView.setText(task);
+                            mr.clear();
+                            if(checkError ==0){
+                                getInfo(task);
+                            }else{
+                                Toast.makeText(c, "Not Found", Toast.LENGTH_SHORT).show();
+                            }
 
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .create();
-        dialog.show();
+
+
+                        }
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .create();
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(c, "Not Found", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
 
-}
+    }

@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
@@ -23,13 +23,17 @@
 
             <TextView
                 android:id="@+id/official_staff"
-                android:layout_width="186dp"
-                android:layout_height="33dp"
-                android:layout_marginTop="40dp"
+                android:layout_width="302dp"
+                android:layout_height="43dp"
+                android:layout_marginTop="32dp"
                 android:gravity="center"
                 android:text="TextView"
+                android:inputType="textMultiLine"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.52"
+                app:layout_constraintHorizontal_bias="0.541"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,11 +41,12 @@
                 android:id="@+id/official_name"
                 android:layout_width="139dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="8dp"
                 android:gravity="center"
                 android:text="TextView"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintHorizontal_bias="0.503"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/official_staff" />
 
@@ -51,6 +56,7 @@
                 android:layout_height="29dp"
                 android:gravity="center"
                 android:text="TextView"
+                android:textColor="#FFFFFF"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/official_name" />
@@ -66,23 +72,24 @@
 
             <ImageView
                 android:id="@+id/official_logo"
-                android:layout_width="66dp"
-                android:layout_height="52dp"
+                android:layout_width="77dp"
+                android:layout_height="64dp"
+                app:layout_constraintBottom_toBottomOf="@+id/official_pic"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"
-                app:srcCompat="@drawable/placeholder"
-                tools:layout_editor_absoluteY="393dp" />
+                app:srcCompat="@drawable/placeholder" />
 
             <TextView
                 android:id="@+id/official_address"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="TextView"
+                android:layout_width="217dp"
+                android:layout_height="47dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/addy"
+                android:textColor="#FFFFFF"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.045"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/official_addy_holder"
                 app:layout_constraintTop_toBottomOf="@+id/official_pic" />
 
             <TextView
@@ -90,7 +97,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
+                android:gravity="left"
                 android:text="TextView"
+                android:textColor="#FFFFFF"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.045"
                 app:layout_constraintStart_toStartOf="parent"
@@ -101,7 +110,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
+                android:gravity="left"
                 android:text="TextView"
+                android:textColor="#FFFFFF"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.045"
                 app:layout_constraintStart_toStartOf="parent"
@@ -142,12 +153,27 @@
 
             <TextView
                 android:id="@+id/official_loc"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="411dp"
+                android:layout_height="28dp"
+                android:background="#FF3700B3"
+                android:gravity="center"
                 android:text="TextView"
+                android:textColor="#FFFFFF"
+                android:textColorHighlight="#FFFFFF"
+                android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/official_addy_holder"
+                android:layout_width="68dp"
+                android:layout_height="19dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="32dp"
+                android:textColor="#FFFFFF"
+                app:layout_constraintBottom_toTopOf="@+id/official_phone"
+                app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

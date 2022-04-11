@@ -1,6 +1,9 @@
 package com.example.civiladvocacyapp;
 
+import com.google.android.gms.common.util.Strings;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class MainRec implements Serializable {
 
@@ -11,8 +14,16 @@ public class MainRec implements Serializable {
     private String address;
     private String phone;
     private String website;
+    private Channels channels;
+//    private String ch1Type;
+//    private String ch1Id;
+//    private String ch2Type;
+//    private String ch2Id;
+//    private String ch3Type;
+//    private String ch3Id;
 
-    public MainRec(String title, String name, String party, String picurl, String address, String phone, String website) {
+
+    public MainRec(String title, String name, String party, String picurl, String address, String phone, String website, Channels channels) {
         this.title = title;
         this.name = name;
         this.party = party;
@@ -20,6 +31,7 @@ public class MainRec implements Serializable {
         this.address = address;
         this.phone = phone;
         this.website = website;
+        this.channels = channels;
     }
 
     public String getTitle() {
@@ -76,5 +88,31 @@ public class MainRec implements Serializable {
 
     public void setWebsite(String website) {
         this.website = website;
+    }
+
+    public Channels getChannels() {
+        return channels;
+    }
+
+    public void setChannels(Channels channels) {
+        this.channels = channels;
+    }
+    public String getCh1Type(){
+        return channels.getCh1Type();
+    }
+    public String getCh1Id(){
+        return channels.getCh1Id();
+    }
+    public String getCh2Type(){
+        return channels.getCh2Type();
+    }
+    public String getCh2Id(){
+        return channels.getCh2Id();
+    }
+    public String getCh3Type(){
+        return channels.getCh3Type();
+    }
+    public String getCh3Id(){
+        return channels.getCh3Id();
     }
 }

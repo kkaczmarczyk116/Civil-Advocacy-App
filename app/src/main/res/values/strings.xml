@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Civil Advocacy App</string>
     <string name="textview3"><u>Google Civic Information API</u></string>
+    <string name="addy"><u>TextView</u></string>
 </resources>

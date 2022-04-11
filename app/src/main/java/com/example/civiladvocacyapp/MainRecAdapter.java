@@ -13,6 +13,7 @@ public class MainRecAdapter extends RecyclerView.Adapter<MainRecHolder> {
     private final MainActivity main;
     private ArrayList<MainRec> mainRecList = new ArrayList<>();
     private SelectListener listener;
+    public Integer pos;
 
     public MainRecAdapter(MainActivity main, ArrayList<MainRec> mainRecList, SelectListener listener) {
         this.main = main;

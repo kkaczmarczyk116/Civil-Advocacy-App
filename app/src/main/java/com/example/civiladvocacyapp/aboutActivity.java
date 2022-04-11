@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 public class aboutActivity extends AppCompatActivity {
     private TextView textView3;
+    private TextView textView5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +18,7 @@ public class aboutActivity extends AppCompatActivity {
         setContentView(R.layout.activity_about);
 
         textView3 = findViewById(R.id.textView3);
+        textView5 = findViewById(R.id.textView5);
 
         textView3.setOnClickListener(new View.OnClickListener() {
             @Override

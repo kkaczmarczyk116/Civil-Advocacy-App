@@ -12,12 +12,15 @@ public class MainRecHolder extends RecyclerView.ViewHolder {
     TextView title;
     TextView name;
     ConstraintLayout mainLayout;
+    TextView index;
 
     public MainRecHolder(@NonNull View itemView) {
         super(itemView);
         title = itemView.findViewById(R.id.title);
         name = itemView.findViewById(R.id.name);
         mainLayout = itemView.findViewById(R.id.mainLayout);
+        
+
 
 
 
