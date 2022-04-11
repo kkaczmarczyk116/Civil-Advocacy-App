@@ -3,6 +3,7 @@ package com.example.civiladvocacyapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -15,6 +16,7 @@ import android.text.util.Linkify;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.squareup.picasso.Picasso;
@@ -39,6 +41,11 @@ public class OfficialActivity extends AppCompatActivity {
     private ImageView official_twitter;
     private ImageView official_yt;
     private Picasso picasso;
+    private String imgLink;
+    private String location;
+    private String party;
+    private String title;
+    private String name;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,14 +69,17 @@ public class OfficialActivity extends AppCompatActivity {
         official_twitter =findViewById(R.id.official_twitter);
         official_yt = findViewById(R.id.official_yt);
         ArrayList<String> ugly = new ArrayList<>();
+        official_fb.setVisibility(View.GONE);
+        official_twitter.setVisibility(View.GONE);
+        official_yt.setVisibility(View.GONE);
 
 
 
         Intent intent = getIntent();
         if(intent != null) {
-            String title = intent.getStringExtra("title");
-            String name = intent.getStringExtra("name");
-            String party = intent.getStringExtra("party");
+            title = intent.getStringExtra("title");
+            name = intent.getStringExtra("name");
+            party = intent.getStringExtra("party");
             if(party.equals("Democratic Party")){
                 getWindow().getDecorView().setBackgroundColor(Color.rgb(0,0,225));
                 official_logo.setImageResource(R.drawable.dem_logo);
@@ -81,8 +91,8 @@ public class OfficialActivity extends AppCompatActivity {
                 getWindow().getDecorView().setBackgroundColor(Color.rgb(0, 0, 0));
                 official_logo.setVisibility(View.GONE);
             }
-            String imgLink = intent.getStringExtra("img");
-            String location = intent.getStringExtra("location");
+            imgLink = intent.getStringExtra("img");
+            location = intent.getStringExtra("location");
             official_loc.setText(location);
             String tele = intent.getStringExtra("tele");
             String addy = intent.getStringExtra("addy");
@@ -138,22 +148,41 @@ public class OfficialActivity extends AppCompatActivity {
             for(int e =0;e< ugly.size();e++){
                 String id;
                 if(ugly.get(e).equals("Facebook")){
+                    official_fb.setVisibility(View.VISIBLE);
                     official_fb.setImageResource(R.drawable.facebook);
                     id = ugly.get(e+1);
+                    official_fb.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            clickFacebook(view,id);
+                        }
+                    });
                 }
                 else if(ugly.get(e).equals("Twitter")){
+                    official_twitter.setVisibility(View.VISIBLE);
                     official_twitter.setImageResource(R.drawable.twitter);
                     id = ugly.get(e+1);
+                    official_twitter.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            clickTwitter(view,id);
+                        }
+                    });
 
                 }
                 else if(ugly.get(e).equals("YouTube")){
+                    official_yt.setVisibility(View.VISIBLE);
                     official_yt.setImageResource(R.drawable.youtube);
                     id = ugly.get(e+1);
+                    official_yt.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            youTubeClicked(view,id);
+                        }
+                    });
 
                 }
-                else{
 
-                }
             }
 
 
@@ -161,7 +190,29 @@ public class OfficialActivity extends AppCompatActivity {
             setOfficials(title,name,party,imgLink);
 
         }
+        official_pic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!imgLink.equals("none")){
+                    onPhototClicked();
+                }
+                else{
+                    return;
+                }
+            }
+        });
 
+
+
+    }
+    private void onPhototClicked(){
+        Intent intent = new Intent(OfficialActivity.this,PhotoDetail.class);
+        intent.putExtra("photo",imgLink);
+        intent.putExtra("loc",location);
+        intent.putExtra("party",party);
+        intent.putExtra("title",title);
+        intent.putExtra("name",name);
+        startActivity(intent);
     }
 
 
@@ -204,6 +255,77 @@ public class OfficialActivity extends AppCompatActivity {
         }
 
     }
+
+    public boolean isPackageInstalled(String packageName) {
+        try {
+            return getPackageManager().getApplicationInfo(packageName, 0).enabled;
+        }
+        catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+    private void makeErrorAlert(String msg) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setMessage(msg);
+        builder.setTitle("No App Found");
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+    public void clickTwitter(View v,String user) {
+        String twitterAppUrl = "twitter://user?screen_name=" + user;
+        String twitterWebUrl = "https://twitter.com/" + user;
+
+        Intent intent;
+        // Check if Twitter is installed, if not we'll use the browser
+        if (isPackageInstalled("com.twitter.android")) {
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(twitterAppUrl));
+        } else {
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(twitterWebUrl));
+        }
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            makeErrorAlert("No Application found that handles ACTION_VIEW (twitter/https) intents");
+        }
+    }
+
+    public void clickFacebook(View v,String user) {
+        // You need the FB user's id for the url
+        String FACEBOOK_URL = "https://www.facebook.com/"+user;
+
+        Intent intent;
+        if (isPackageInstalled("com.facebook.katana")) {
+            String urlToUse = "fb://facewebmodal/f?href=" + FACEBOOK_URL;
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlToUse));
+        } else {
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(FACEBOOK_URL));
+        }
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            makeErrorAlert("No Application found that handles ACTION_VIEW (fb/https) intents");
+        }
+
+    }
+    public void youTubeClicked(View v,String idName) {
+        String name = idName;
+        Intent intent = null;
+        try {
+            intent = new Intent(Intent.ACTION_VIEW);
+            intent.setPackage("com.google.android.youtube");
+            intent.setData(Uri.parse("https://www.youtube.com/" + name));
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://www.youtube.com/" + name)));
+        }
+    }
+
+
 
 
 }

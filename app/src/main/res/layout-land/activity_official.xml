@@ -54,18 +54,21 @@
                 android:id="@+id/official_party"
                 android:layout_width="141dp"
                 android:layout_height="29dp"
+                android:layout_marginTop="20dp"
                 android:gravity="center"
                 android:text="TextView"
                 android:textColor="#FFFFFF"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.97"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/official_name" />
+                app:layout_constraintTop_toBottomOf="@+id/official_loc" />
 
             <ImageView
                 android:id="@+id/official_pic"
-                android:layout_width="225dp"
-                android:layout_height="275dp"
+                android:layout_width="208dp"
+                android:layout_height="249dp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/official_party"
                 app:srcCompat="@drawable/placeholder" />
@@ -74,9 +77,10 @@
                 android:id="@+id/official_logo"
                 android:layout_width="77dp"
                 android:layout_height="64dp"
+                android:layout_marginBottom="4dp"
                 app:layout_constraintBottom_toBottomOf="@+id/official_pic"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintHorizontal_bias="0.914"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/placeholder" />
 
@@ -84,13 +88,13 @@
                 android:id="@+id/official_address"
                 android:layout_width="217dp"
                 android:layout_height="47dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="40dp"
                 android:text="@string/addy"
                 android:textColor="#FFFFFF"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/official_addy_holder"
-                app:layout_constraintTop_toBottomOf="@+id/official_pic" />
+                app:layout_constraintTop_toBottomOf="@+id/official_name" />
 
             <TextView
                 android:id="@+id/official_phone"
@@ -101,7 +105,7 @@
                 android:text="TextView"
                 android:textColor="#FFFFFF"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.045"
+                app:layout_constraintHorizontal_bias="0.06"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/official_address" />
 
@@ -114,7 +118,7 @@
                 android:text="TextView"
                 android:textColor="#FFFFFF"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.045"
+                app:layout_constraintHorizontal_bias="0.073"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/official_phone" />
 
@@ -123,8 +127,7 @@
                 android:layout_width="55dp"
                 android:layout_height="50dp"
                 android:layout_marginTop="12dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintEnd_toStartOf="@+id/official_pic"
                 app:layout_constraintStart_toEndOf="@+id/official_twitter"
                 app:layout_constraintTop_toBottomOf="@+id/officials_website"
                 app:srcCompat="@drawable/placeholder" />
@@ -153,7 +156,7 @@
 
             <TextView
                 android:id="@+id/official_loc"
-                android:layout_width="411dp"
+                android:layout_width="0dp"
                 android:layout_height="28dp"
                 android:background="#FF3700B3"
                 android:gravity="center"
@@ -169,7 +172,7 @@
                 android:id="@+id/official_addy_holder"
                 android:layout_width="68dp"
                 android:layout_height="19dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="36dp"
                 android:layout_marginBottom="32dp"
                 android:textColor="#FFFFFF"
                 app:layout_constraintBottom_toTopOf="@+id/official_phone"

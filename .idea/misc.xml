@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/CivilAdvocacyApp/app/src/main/res/layout-land/activity_official.xml" value="0.5" />
+        <entry key="..\:/CivilAdvocacyApp/app/src/main/res/layout-land/activity_photo_detail.xml" value="0.3645833333333333" />
         <entry key="..\:/CivilAdvocacyApp/app/src/main/res/layout/about.xml" value="0.5259259259259259" />
         <entry key="..\:/CivilAdvocacyApp/app/src/main/res/layout/activity_about.xml" value="0.5259259259259259" />
         <entry key="..\:/CivilAdvocacyApp/app/src/main/res/layout/activity_main.xml" value="0.5" />

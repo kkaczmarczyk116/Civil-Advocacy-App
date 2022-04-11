@@ -78,8 +78,6 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
 
     }
     //TODO: Figure out error handling for entering bad location
-    //TODO: Horizontal Layout
-    //TODO: GEt Channel Intents
 
     @SuppressLint("MissingPermission")
     private void determineLocation() {
@@ -350,38 +348,41 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
         intent.putExtra("ch3Id",mr.getCh3Id());
 
         startActivity(intent);
-        Toast.makeText(this, mr.getCh1Type(),Toast.LENGTH_LONG).show();
     }
 
     private void enterLocDialog(Context c) {
-        try {
-            final EditText taskEditText = new EditText(c);
-            AlertDialog dialog = new AlertDialog.Builder(c)
-                    .setTitle("Enter Address")
-                    .setView(taskEditText)
-                    .setPositiveButton("Okay ", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            String task = String.valueOf(taskEditText.getText());
-                            locationTexeView.setText(task);
-                            mr.clear();
-                            if(checkError ==0){
-                                getInfo(task);
-                            }else{
-                                Toast.makeText(c, "Not Found", Toast.LENGTH_SHORT).show();
-                            }
+        final EditText taskEditText = new EditText(c);
+        AlertDialog dialog = new AlertDialog.Builder(c)
+                .setTitle("Enter Address\n"+"( City, State ) or Zip Code")
+                .setView(taskEditText)
+                .setPositiveButton("Okay ", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String priorLoc = locationTexeView.getText().toString();
+                        String task = String.valueOf(taskEditText.getText());
+                        mr.clear();
+                        getInfo(task);
+
+//                            if(mr.isEmpty()){
+//                                locationTexeView.setText(priorLoc);
+//                                getInfo(priorLoc);
+//                                Toast.makeText(c, "Location Not Found", Toast.LENGTH_SHORT).show();
+//                                enterLocDialog(c);
+//                            }else{
+//                                getInfo(task);
+//                            }
+//                            locationTexeView.setText(task);
+//                            mr.clear();
+//                            getInfo(locationTexeView.getText().toString());
 
 
 
-                        }
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .create();
-            dialog.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(c, "Not Found", Toast.LENGTH_SHORT).show();
-        }
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+        dialog.show();
+
     }
 
 
