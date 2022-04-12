@@ -77,8 +77,6 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
 
 
     }
-    //TODO: Figure out error handling for entering bad location
-
     @SuppressLint("MissingPermission")
     private void determineLocation() {
         if (checkAppPermissions()) {
@@ -88,6 +86,9 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
                             locationString = getLoc(location);
                             locationTexeView.setText(locationString);
                             getInfo(locationString);
+                        }
+                        else{
+                            Toast.makeText(MainActivity.this, "No Location", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnFailureListener(this, e -> Toast.makeText(MainActivity.this,
@@ -147,9 +148,7 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
         }
     }
 
-    //TODO: picture handling
-    //TODO: get current location
-    //TODO: color coding based on party,check for "unknown party"
+
 
 
     private void getInfo(String l){
@@ -220,6 +219,7 @@ public class MainActivity extends AppCompatActivity implements SelectListener {
                                     }else{
                                         addyObj = "address not found";
                                     }
+
 
 
                                     if(officialObj.has("phones")){
