@@ -1,3 +1,4 @@
+
 *This app acquires and displays an interactive list of political officials that represent the current location (or
 a specified location) at each level of government.
 *Android Fused Location Provider services was used to determine the users current location.
